@@ -4,7 +4,7 @@ Table retrieval using the semantic space.
 ## Reproduced paper
 Shuo Zhang and Krisztian Balog. 2018. *Ad Hoc Table Retrieval using Semantic Similarity*. In Proceedings of the 2018 World Wide Web Conference (WWW ’18). International World Wide Web Conferences Steering Committee, Republic and Canton of Geneva, CHE, 1553–1562.
 
-This paper can be found [here](https://dl.acm.org/doi/abs/10.1145/3178876.3186067)
+This paper can be found [here](https://dl.acm.org/doi/abs/10.1145/3178876.3186067).
 
 ## Datasets
 
