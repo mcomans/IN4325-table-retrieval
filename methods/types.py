@@ -25,7 +25,15 @@ class Table:
         self.caption = caption
         self.data = data
 
-
     def rows(self):
         """Is the same as .data but more explicit in what it is."""
         return self.data
+
+
+class Query:
+    id: int
+    query: str
+
+    def __init__(self, id, query):
+        self.id = id
+        self.query = query
