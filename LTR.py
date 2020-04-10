@@ -13,12 +13,14 @@ def ndcg_scorer(estimator, x, y):
     :param y: The true labels.
     :return: Returns the NDCG score.
     """
-
     predictions = estimator.predict(x)
 
-    # Join all the data back into a dataframe
+    # Join all the data back to a dataframe
     df = pd.DataFrame({'prediction': predictions})
-    df = df.join(info)
+    if len(y) > .5 * len(feature_data):
+        df = df.join(train_info)
+    else:
+        df = df.join(test_info)
     df = df.join(pd.DataFrame({'rel': y}))
 
     # Group the predictions and the true labels by query
@@ -67,25 +69,38 @@ def rfr_model(x, y, x_test, y_test):
     print(best_params)
 
     rfr = RandomForestRegressor(max_depth=best_params['max_depth'], n_estimators=best_params['n_estimators'],
-                                random_state=True, verbose=False)
+                                random_state=0, verbose=False)
     rfr.fit(x, y)
     score = ndcg_scorer(rfr, x_test, y_test)
     print(score)
 
+    write_trec_results(rfr, x)
 
-features = pd.read_csv('data/features.csv')
-info = features[['query_id', 'query', 'table_id']]
+
+def write_trec_results(rfr, x):
+    predictions = rfr.predict(x)
+    df = test_info.join(pd.DataFrame({'score': predictions}))
+    with open('results/trec_scores_ltr_testset.txt', 'w') as file:
+        for index, row in df.iterrows():
+            file.write(f"{row['query_id']} Q0 {row['table_id']} 1 {row['score']} ltr\n")
+
+
+feature_data = pd.read_csv('data/features.csv')
 
 # Group the feature data by queries in order to create a train/test split
-queries = features['query'].unique()
+queries = feature_data['query'].unique()
 queryDict = {elem: pd.DataFrame for elem in queries}
 
 for key in queryDict.keys():
-    queryDict[key] = features[:][features['query'] == key]
+    queryDict[key] = feature_data[:][feature_data['query'] == key]
 
 # Group the queries (currently an arbitrary amount)
 test = pd.concat([v for (k,v) in list(queryDict.items())[:15]])
 train = pd.concat([v for (k,v) in list(queryDict.items())[15:]])
+
+# Separate the query information
+test_info = test[['query_id', 'query', 'table_id']]
+train_info = train[['query_id', 'query', 'table_id']]
 
 test_labels = np.array(test['rel'])
 train_labels = np.array(train['rel'])
