@@ -1,0 +1,61 @@
+{
+  "table1": {
+    "title": [
+      "id",
+      "Singer",
+      "Score"
+    ],
+    "numCols": 3,
+    "numericColumns": [],
+    "pgTitle": "The Best Singers of IR",
+    "numDataRows": 3,
+    "secondTitle": "",
+    "numHeaderRows": 1,
+    "caption": "Singers and their scores",
+    "data": [
+      [
+        "1",
+        "Daan Oudejans",
+        "Like a violin"
+      ],
+      [
+        "2",
+        "Martijn Comans",
+        "Butterflies on a rainbow"
+      ],
+      [
+        "3",
+        "Nick Belzer",
+        "What is this even?"
+      ]
+    ]
+
+  },
+  "table2": {
+  "title": [
+        "Name",
+        "Professional Data Rating"
+      ],
+      "numCols": 2,
+      "numericColumns": [],
+      "pgTitle": "Professional Data on a Page",
+      "numDataRows": 3,
+      "secondTitle": "",
+      "numHeaderRows": 1,
+      "caption": "Extremely Professional data",
+      "data": [
+        [
+          "Data Source A",
+          "37%"
+        ],
+        [
+          "Data Source B",
+          "43%"
+        ],
+        [
+          "Data Source C",
+          "44%"
+        ]
+      ]
+  }
+}
