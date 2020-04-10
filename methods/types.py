@@ -31,11 +31,9 @@ class Table:
 
 
 class Query:
+    id: int
     query: str
 
-    def terms(self):
-        return self.query.split(" ")
-
-
-class TermVector:
-    terms: [str]
+    def __init__(self, id, query):
+        self.id = id
+        self.query = query

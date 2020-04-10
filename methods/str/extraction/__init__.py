@@ -1,4 +1,4 @@
-from methods.types import Table, Query, TermVector
+from methods.types import Table, Query
 from enum import Enum
 from . import words, entities
 
@@ -9,7 +9,7 @@ class ExtractionMethod(Enum):
 
 
 def extract(table: Table, query: Query,
-            method: ExtractionMethod) -> (TermVector, TermVector):
+            method: ExtractionMethod) -> ([str], [str]):
     """Extracts terms from table and query using the given method."""
     if method == ExtractionMethod.ENTITY:
         return (entities.extract_entities(query),
