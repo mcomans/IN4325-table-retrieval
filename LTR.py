@@ -110,15 +110,12 @@ train_labels = np.array(train['rel'])
 test = test.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
 train = train.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
 
-print(test)
-print(train)
+print(f"Training set:\n\n{train}")
+print(f'Training labels shape: {train_labels.shape}\n')
+print(f"Testing set:\n\n{test}")
+print(f'Testing labels shape: {test_labels.shape}\n')
 
 test_features = np.array(test)
 train_features = np.array(train)
-
-print('Training Features Shape:', train_features.shape)
-print('Training Labels Shape:', train_labels.shape)
-print('Testing Features Shape:', test_features.shape)
-print('Testing Labels Shape:', test_labels.shape)
 
 rfr_model(train_features, train_labels, test_features, test_labels)
