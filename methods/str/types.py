@@ -1,5 +1,14 @@
 class Table:
-    data: any
+    id: str
+    title: [str]
+    numCols: int
+    numericColumns: [int]
+    pgTitle: str
+    numDataRows: int
+    secondTitle: str
+    numHeaderRows: int
+    caption: str
+    data: [[str]]
 
     def terms(self):
         # TODO: Implementation
