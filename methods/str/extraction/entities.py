@@ -1,4 +1,4 @@
-from nltk.tokenize import word_tokenize
+from . import dbpedia_api
 from methods.types import Table, Query
 
 
@@ -8,17 +8,18 @@ def extract_entities(input) -> [str]:
     if type(input) == Table:
         terms = __extract_table_terms(input)
     elif type(input) == Query:
-        terms = input.terms()
+        terms = input.query.split(" ")
+    else:
+        terms = input
     assert terms is not None
-    tokenized = [word_tokenize(term) for term in terms]
-    return [term for term in tokenized if term.label == "NE"]
+    return dbpedia_api.extract_entities(" ".join(terms))
 
 
 def __extract_table_terms(table: Table) -> [str]:
     """Uses some aspects of the Table input to retrieve the terms relevant as
     defined by Zhang and Balog. For entity extraction this is the core
     column, page title and table caption."""
-    aspects = __find_core_column(table) + [table.pgTitle, table.caption]
+    aspects = __find_core_column(table) + [table.page_title, table.caption]
     return " ".join(aspects).split(" ")
 
 
@@ -28,10 +29,10 @@ def __find_core_column(table: Table) -> [str]:
     entities/cells.
     """
     scores = []
-    for col in range(table.numCols):
+    for col in range(table.num_cols):
         col_data = [row[col] for row in table.rows()]
         scores.append((col, col_data, len(extract_entities(col_data)) /
-                       table.numCols))
+                       table.num_cols))
     sorted_scores = sorted(scores, key=lambda x: x[2], reverse=True)
     return sorted_scores[0][1]
 
