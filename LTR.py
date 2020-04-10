@@ -14,6 +14,7 @@ def ndcg_scorer(estimator, x, y):
     :return: Returns the NDCG score.
     """
     predictions = estimator.predict(x)
+    print(len(predictions))
 
     # Join all the data back to a dataframe
     df = pd.DataFrame({'prediction': predictions})
@@ -48,7 +49,7 @@ def ndcg_scorer(estimator, x, y):
     return ndcg_score(actual_grouped_rect, predictions_grouped_rect, k=20)
 
 
-def rfr_model(x, y, x_test, y_test):
+def rfr_model(x_train, y_train, x_test, y_test):
     """
     Run a random forest regression model.
     :param x: The training data
@@ -64,17 +65,17 @@ def rfr_model(x, y, x_test, y_test):
         },
         cv=5, scoring=ndcg_scorer, verbose=0, n_jobs=-1)
 
-    grid_result = gsc.fit(x, y)
+    grid_result = gsc.fit(x_train, y_train)
     best_params = grid_result.best_params_
     print(best_params)
 
     rfr = RandomForestRegressor(max_depth=best_params['max_depth'], n_estimators=best_params['n_estimators'],
                                 random_state=0, verbose=False)
-    rfr.fit(x, y)
+    rfr.fit(x_train, y_train)
     score = ndcg_scorer(rfr, x_test, y_test)
     print(score)
 
-    write_trec_results(rfr, x)
+    write_trec_results(rfr, x_test)
 
 
 def write_trec_results(rfr, x):
