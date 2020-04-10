@@ -16,8 +16,7 @@ def read_queries(filename="example.txt") -> [Query]:
     it."""
     queries = []
     with open('data/queries/{filename}'.format(filename=filename), 'r') as file:
-        data = file.readlines()
-        return [__parse_query(q) for q in data]
+        return [__parse_query(q) for q in file]
 
 
 def __parse_query(input: str) -> Query:
