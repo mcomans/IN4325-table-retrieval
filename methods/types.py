@@ -42,6 +42,21 @@ class Table:
 
         return empty_cells
 
+    def column_tokens(self, col: int) -> [str]:
+        """
+        Returns the values in the given column of the table, combined and tokenized
+        :param col: Column index
+        :return: A list of tokens from values in the left-most column of the table
+        """
+        return [token for row in self.data if len(row) > col for token in row[col].split()]
+
+    def body_tokens(self) -> [str]:
+        """
+        Returns the complete body of the table (all cells), combined and tokenized
+        :return: The complete body of the table (all cells), combined and tokenized
+        """
+
+        return [token for row in self.data for cell in row for token in cell.split()]
 
 class Query:
     id: int
