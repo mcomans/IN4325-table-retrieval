@@ -52,8 +52,8 @@ def ndcg_scorer(estimator, x, y):
 def rfr_model(x_train, y_train, x_test, y_test):
     """
     Run a random forest regression model.
-    :param x: The training data
-    :param y: The training labels
+    :param x_train: The training data
+    :param y_train: The training labels
     :param x_test: The test data
     :param y_test: The test labels
     """
