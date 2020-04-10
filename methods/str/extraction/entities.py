@@ -1,26 +1,30 @@
-from . import dbpedia_api
+import spacy
 from methods.types import Table, Query
+
+nlp = spacy.load('en_core_web_sm')
 
 
 def extract_entities(input) -> [str]:
     """Extract named entities from the given terms."""
-    terms = None
-    if type(input) == Table:
+    terms = []
+    if isinstance(input, Table):
         terms = __extract_table_terms(input)
-    elif type(input) == Query:
-        terms = input.query.split(" ")
-    else:
+    elif isinstance(input, Query):
+        terms = [input.query]
+    elif isinstance(input, list):
         terms = input
+    else:
+        terms = [input]
     assert terms is not None
-    return dbpedia_api.extract_entities(" ".join(terms))
+    entities = [nlp(term).ents for term in terms]
+    return [ent for list in entities for ent in list]
 
 
 def __extract_table_terms(table: Table) -> [str]:
     """Uses some aspects of the Table input to retrieve the terms relevant as
     defined by Zhang and Balog. For entity extraction this is the core
     column, page title and table caption."""
-    aspects = __find_core_column(table) + [table.page_title, table.caption]
-    return " ".join(aspects).split(" ")
+    return __find_core_column(table) + [table.page_title, table.caption]
 
 
 def __find_core_column(table: Table) -> [str]:

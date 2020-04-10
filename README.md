@@ -38,6 +38,10 @@ It is optional to create a virtualenv with this python version as described
     ```bash
     python -m pip install -r requirements.txt
     ```
+4. Install spaCy requirements:
+    ```bash
+   python -m spacy download en_core_web_sm
+   ```
 
 ### Running steps
 
