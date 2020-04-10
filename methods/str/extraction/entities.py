@@ -1,5 +1,5 @@
 from nltk.tokenize import word_tokenize
-from methods.str.types import Table, Query
+from methods.types import Table, Query
 
 
 def extract_entities(input) -> [str]:

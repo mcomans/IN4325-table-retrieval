@@ -1,5 +1,5 @@
 from methods.str import extraction
-from methods.str.types import Table, Query
+from methods.types import Table, Query
 
 # Semantic Table Retrieval is made up of three major steps:
 # - Extraction of table and query data to terms (word or entity based)

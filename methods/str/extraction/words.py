@@ -1,4 +1,4 @@
-from methods.str.types import Table, Query
+from methods.types import Table, Query
 
 
 def extract_unique_words(input) -> [str]:

@@ -1,4 +1,4 @@
-from methods.str.types import Table, Query, TermVector
+from methods.types import Table, Query, TermVector
 from enum import Enum
 from . import words, entities
 
