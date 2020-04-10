@@ -15,5 +15,4 @@ def __term_frequency(term: str, doc_tokens: [str]) -> float:
     :param doc_tokens: Tokens in document (expected to be lower case)
     :return: Term count in document tokens
     """
-    assert(term.islower())
     return doc_tokens.count(term)
