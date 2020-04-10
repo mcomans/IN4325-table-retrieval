@@ -16,7 +16,7 @@ with open(args.rel, "r") as rel_file:
     rels = [(split[0], split[2], split[3]) for split in split_lines]
 
 with open(args.output, "w") as out:
-    out.write("query_id,query,table_id,qlen,row,col,rel\n")
+    out.write("query_id,query,table_id,qlen,null,row,col,rel\n")
 
     for rel in rels:
         query_id = rel[0]
@@ -34,4 +34,11 @@ with open(args.output, "w") as out:
 
         table = tables_filtered[0]
 
-        out.write(f"{query_id},{query},{table_id},{len(query.split())},{table.num_data_rows},{table.num_cols},{relevance}")
+        out.write(f"{query_id},"
+                  f"{query},"
+                  f"{table_id},"
+                  f"{len(query.split())},"
+                  f"{table.empty_cell_count()}"
+                  f"{table.num_data_rows},"
+                  f"{table.num_cols},"
+                  f"{relevance}")

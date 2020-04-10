@@ -29,6 +29,19 @@ class Table:
         """Is the same as .data but more explicit in what it is."""
         return self.data
 
+    def empty_cell_count(self) -> int:
+        """
+        Counts table cells with no value in table
+        :return: Empty cell count
+        """
+        empty_cells = 0
+        for row in self.data:
+            for cell in row:
+                if not cell:
+                    empty_cells += 1
+
+        return empty_cells
+
 
 class Query:
     id: int
