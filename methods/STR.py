@@ -11,14 +11,14 @@ def run_str(e_method: extraction.ExtractionMethod):
     """Run the STR method given a set of parameters.
     :param e_method The type of extraction method used.
     """
-    table = Table() # Placeholder
-    query = Query() # Placeholder
+    table = Table()  # Placeholder
+    query = Query()  # Placeholder
 
     # Extraction step
     t_extracted_words = \
-        extraction.extract(table.terms(), e_method)
+        extraction.extract(table, query, e_method)
     q_extracted_words = \
-        extraction.extract(query.terms(), e_method)
+        extraction.extract(table, query, e_method)
 
     # TODO: Mapping Step
 
