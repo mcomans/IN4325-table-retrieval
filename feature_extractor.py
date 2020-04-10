@@ -16,7 +16,7 @@ with open(args.rel, "r") as rel_file:
     rels = [(split[0], split[2], split[3]) for split in split_lines]
 
 with open(args.output, "w") as out:
-    out.write("query_id,query,table_id,row,col,rel\n")
+    out.write("query_id,query,table_id,qlen,row,col,rel\n")
 
     for rel in rels:
         query_id = rel[0]
@@ -30,7 +30,8 @@ with open(args.output, "w") as out:
         tables_filtered = [x for x in tables if x.id == table_id]
         if len(tables_filtered) < 1:
             print(f"Could not find table {table_id} in file {table_file}")
-        else:
-            table = tables_filtered[0]
+            continue
 
-            out.write(f"{query_id},{query},{table_id},{table.num_data_rows},{table.num_cols},{relevance}")
+        table = tables_filtered[0]
+
+        out.write(f"{query_id},{query},{table_id},{len(query.split())},{table.num_data_rows},{table.num_cols},{relevance}")
