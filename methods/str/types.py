@@ -13,10 +13,6 @@ class Table:
     def rows(self):
         return self.data
 
-    def terms(self):
-        # TODO: Implementation
-        pass
-
 
 class Query:
     query: str

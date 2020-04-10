@@ -8,10 +8,14 @@ class ExtractionMethod(Enum):
     ENTITY = "ENTITY"
 
 
-def extract(terms: [str],
-            method: ExtractionMethod) -> TermVector:
-    """Extracts terms from the table and query given the method."""
+def extract(table: Table, query: Query,
+            method: ExtractionMethod) -> (TermVector, TermVector):
+    """Extracts terms from table and query using the given method."""
     if method == ExtractionMethod.ENTITY:
-        return entities.extract_entities(terms)
+        return (entities.extract_entities(query),
+                entities.extract_entities(table))
     elif method == ExtractionMethod.WORDS:
-        return words.extract_unique_words(terms)
+        return (words.extract_unique_words(query),
+                words.extract_unique_words(table))
+
+
