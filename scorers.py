@@ -3,24 +3,24 @@ import pandas as pd
 from sklearn.metrics import ndcg_score
 
 
-def ndcg_scorer(y_true, y_pred, feature_data, train_info, test_info, k=20):
+def ndcg_scorer(y_true, y_pred, info, k=20):
     """
     Custom scorer for NDCG. Needs the feature data and query information for properly grouping the queries in order to
     calculate the NDCG per query.
     :param y_true: The true labels.
     :param y_pred: The predicted labels.
-    :param feature_data: The raw feature dataframe.
-    :param train_info: The query information for the training dataset.
-    :param test_info: The query information for the test dataset.
+    :param info: The query information belong to the labels that are being scored. This should be the appropriate
+    info for the labels being scored (i.e. the test or training set).
     :param k: The top results cutoff length (default 20).
     :return: Returns the NDCG score.
     """
     # Join all the data back to a dataframe
     df = pd.DataFrame({'prediction': y_pred})
-    if len(y_pred) > .5 * len(feature_data):
-        df = df.join(train_info)
-    else:
-        df = df.join(test_info)
+
+    if len(info) != len(y_true):
+        return -1
+
+    df = df.join(info.reset_index())
     df = df.join(pd.DataFrame({'rel': y_true}))
 
     # Group the predictions and the true labels by query

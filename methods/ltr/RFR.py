@@ -47,8 +47,7 @@ class RFR:
         :param y_train: The true training labels.
         :return: Returns the best parameters.
         """
-        scorer = make_scorer(ndcg_scorer, feature_data=self.feature_data, train_info=self.train_info,
-                             test_info=self.test_info)
+        scorer = make_scorer(ndcg_scorer, info=self.train_info)
 
         gsc = GridSearchCV(
             estimator=RandomForestRegressor(),
@@ -79,8 +78,7 @@ class RFR:
         rfr.fit(self.x_train, self.y_train)
 
         y_pred = rfr.predict(self.x_test)
-        score = ndcg_scorer(self.y_test, y_pred, feature_data=self.feature_data, train_info=self.train_info,
-                            test_info=self.test_info)
+        score = ndcg_scorer(self.y_test, y_pred, info=self.test_info)
         print(score)
 
         return self.test_info.join(pd.DataFrame({'score': y_pred})), score
