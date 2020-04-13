@@ -89,19 +89,12 @@ def write_trec_results(rfr, x):
 feature_data = pd.read_csv('data/features.csv')
 
 # Group the feature data by queries in order to create a train/test split
-queries = feature_data['query'].unique()
-queryDict = {elem: pd.DataFrame for elem in queries}
-
-for key in queryDict.keys():
-    queryDict[key] = feature_data[:][feature_data['query'] == key]
-
-# Group the queries (currently an arbitrary amount)
-test = pd.concat([v for (k,v) in list(queryDict.items())[:15]])
-train = pd.concat([v for (k,v) in list(queryDict.items())[15:]])
+test = feature_data[feature_data.groupby('query_id').ngroup() > 45]
+train = feature_data[feature_data.groupby('query_id').ngroup() < 45]
 
 # Separate the query information
-test_info = test[['query_id', 'query', 'table_id']]
-train_info = train[['query_id', 'query', 'table_id']]
+test_info = test[['query_id', 'query', 'table_id']].reset_index()
+train_info = train[['query_id', 'query', 'table_id']].reset_index()
 
 test_labels = np.array(test['rel'])
 train_labels = np.array(train['rel'])
