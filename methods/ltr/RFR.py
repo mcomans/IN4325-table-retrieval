@@ -76,9 +76,12 @@ class RFR:
 
         rfr = RandomForestRegressor(max_depth=max_depth, n_estimators=n_estimators, random_state=0)
         rfr.fit(self.x_train, self.y_train)
-
         y_pred = rfr.predict(self.x_test)
-        score = ndcg_scorer(self.y_test, y_pred, info=self.test_info)
-        print(score)
 
-        return self.test_info.join(pd.DataFrame({'score': y_pred})), score
+        scores = dict.fromkeys([5, 10, 15, 20])
+        scores[5] = ndcg_scorer(self.y_test, y_pred, info=self.test_info, k=5)
+        scores[10] = ndcg_scorer(self.y_test, y_pred, info=self.test_info, k=10)
+        scores[15] = ndcg_scorer(self.y_test, y_pred, info=self.test_info, k=15)
+        scores[20] = ndcg_scorer(self.y_test, y_pred, info=self.test_info, k=20)
+
+        return self.test_info.join(pd.DataFrame({'score': y_pred})), scores
