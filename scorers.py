@@ -17,8 +17,8 @@ def ndcg_scorer(y_true, y_pred, info, k=20):
     # Join all the data back to a dataframe
     df = pd.DataFrame({'prediction': y_pred})
 
-    if len(info) != len(y_true):
-        return -1
+    if not len(info) == len(y_pred) == len(y_true):
+        raise Exception("Lengths are not equal")
 
     df = df.join(info.reset_index())
     df = df.join(pd.DataFrame({'rel': y_true}))

@@ -39,28 +39,26 @@ class RFR:
         self.x_test = np.array(test)
         self.x_train = np.array(train)
 
-    def find_best_params(self, x_train, y_train):
+    def find_best_params(self):
         """
         Finds the best parameters for the Random Forest Regression model given the training data using a grid search
-        with 5-fold cross validation with respect to the NDCG@20 metric.
-        :param x_train: The training features.
-        :param y_train: The true training labels.
+        with respect to the NDCG@20 metric.
         :return: Returns the best parameters.
         """
-        scorer = make_scorer(ndcg_scorer, info=self.train_info)
+        best = {'score': 0, 'n_estimators': 0, 'max_depth': 0}
+        for max_depth in range(2, 4):
+            for n_estimators in [50, 100, 1000]:
+                rfr = RandomForestRegressor(max_depth=max_depth, n_estimators=n_estimators, random_state=0)
+                rfr.fit(self.x_train, self.y_train)
+                y_pred = rfr.predict(self.x_train)
+                score = ndcg_scorer(self.y_train, y_pred, self.train_info)
+                if score > best['score']:
+                    best['score'] = score
+                    best['n_estimators'] = n_estimators
+                    best['max_depth'] = max_depth
 
-        gsc = GridSearchCV(
-            estimator=RandomForestRegressor(),
-            param_grid={
-                'max_depth': range(2, 5),
-                'n_estimators': (10, 50, 100, 1000),
-            },
-            cv=5, scoring=scorer, n_jobs=-1)
-
-        grid_result = gsc.fit(x_train, y_train)
-        best_params = grid_result.best_params_
-        print(best_params)
-        return best_params
+        print(f"Best params: n_estimators {best['n_estimators']}, max_depth {best['max_depth']}")
+        return best
 
     def run(self, max_depth=-1, n_estimators=-1):
         """
@@ -70,7 +68,7 @@ class RFR:
         :return: A dataframe of predictions and their respective query information, and the NDCG@20 score for the run.
         """
         if max_depth == -1 or n_estimators == -1:
-            best_params = self.find_best_params(self.x_train, self.y_train)
+            best_params = self.find_best_params()
             max_depth = best_params['max_depth']
             n_estimators = best_params['n_estimators']
 
