@@ -10,6 +10,9 @@ from .helper import cosine_sim
 
 def calculate_sim(query_vectors: [[int]],
                   table_vectors: [[int]]) -> float:
+    # TODO: Use specific TF-IDF weighting in case of word terms.
+    # However it is not clear compared to which documents this should be done
+    # according to Zhang and Bolag.
     query_centroid = __calculate_centroid(query_vectors)
     table_centroid = __calculate_centroid(table_vectors)
     return cosine_sim(query_centroid, table_centroid)
