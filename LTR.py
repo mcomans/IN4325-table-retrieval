@@ -14,7 +14,6 @@ def ndcg_scorer(estimator, x, y):
     :return: Returns the NDCG score.
     """
     predictions = estimator.predict(x)
-    print(len(predictions))
 
     # Join all the data back to a dataframe
     df = pd.DataFrame({'prediction': predictions})
@@ -81,6 +80,7 @@ def rfr_model(x_train, y_train, x_test, y_test):
 def write_trec_results(rfr, x):
     predictions = rfr.predict(x)
     df = test_info.join(pd.DataFrame({'score': predictions}))
+    df = df.groupby('query_id').apply(lambda x: x.sort_values(['score'], ascending=False)).reset_index(drop=True)
     with open('results/trec_scores_ltr_testset.txt', 'w') as file:
         for index, row in df.iterrows():
             file.write(f"{row['query_id']} Q0 {row['table_id']} 1 {row['score']} ltr\n")
