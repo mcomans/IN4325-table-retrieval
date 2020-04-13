@@ -22,3 +22,15 @@ def __parse_query(input: str) -> Query:
     """Helper function to parse queries."""
     matches = re.match(r"(\d+) (.*)$", input)
     return Query(id=int(matches[1]), query=matches[2])
+
+
+def get_table(table_dir: str, table_id: str) -> Table or None:
+    split_table_id = table_id.split("-")
+    table_file = f"re_tables-{split_table_id[1]}.json"
+    tables = read_tables(f"{table_dir}/{table_file}")
+    tables_filtered = [x for x in tables if x.id == table_id]
+    if len(tables_filtered) < 1:
+        print(f"Could not find table {table_id} in file {table_file}")
+        return None
+
+    return tables_filtered[0]

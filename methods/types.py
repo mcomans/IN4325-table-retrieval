@@ -50,6 +50,9 @@ class Table:
         """
         return [token for row in self.data if len(row) > col for token in row[col].split()]
 
+    def header_tokens(self) -> [str]:
+        return [token for header in self.title for token in header.split()]
+
     def body_tokens(self) -> [str]:
         """
         Returns the complete body of the table (all cells), combined and tokenized

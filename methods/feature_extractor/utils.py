@@ -1,4 +1,16 @@
 from functools import reduce
+from math import log
+
+
+def total_idf(terms: [str], doc_set: [[str]]) -> float:
+    return sum(__idf(term, doc_set) for term in terms)
+
+
+def __idf(term: str, doc_set: [[str]]) -> float:
+    N = len(doc_set)
+    nr_matched_docs = sum(1 for doc_tokens in doc_set if term in doc_tokens)
+
+    return log(N / (1 + nr_matched_docs))
 
 
 def total_term_frequency(terms: [str], doc_tokens: [str]) -> float:
