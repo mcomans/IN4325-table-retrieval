@@ -4,17 +4,19 @@ from sklearn.metrics import make_scorer
 import numpy as np
 import pandas as pd
 from scorers import ndcg_scorer
-import TREC
-
-TEST_SET_SIZE = 20
 
 
 class RFR:
-    def __init__(self, features_df):
+    def __init__(self, features_df, test_set_size):
+        """
+        Initializes the Random Forest Regression class by preprocessing the dataset and initializing the features.
+        :param features_df: A dataframe containing the raw features and their attributes.
+        :param test_set_size: The size that the test set should be.
+        """
         self.feature_data = features_df
 
         # Randomly sample queries for the test set and divide the data in training/test sets
-        random_test_queries = np.random.choice(self.feature_data['query_id'].unique(), TEST_SET_SIZE, replace=False)
+        random_test_queries = np.random.choice(self.feature_data['query_id'].unique(), test_set_size, replace=False)
         test = self.feature_data[self.feature_data['query_id'].isin(random_test_queries)]
         train = self.feature_data[~self.feature_data['query_id'].isin(random_test_queries)]
 
@@ -82,15 +84,3 @@ class RFR:
         print(score)
 
         return self.test_info.join(pd.DataFrame({'score': y_pred})), score
-
-
-features_df = pd.read_csv('data/features.csv')
-
-total = 0
-no_runs = 10
-for i in range(no_runs):
-    rfr = RFR(features_df)
-    results, score = rfr.run()
-    total += score
-    TREC.write_results(results, f'LTR_RFR_{i}_{TEST_SET_SIZE}')
-print(f"Average NDCG@20 over {no_runs} runs: {total/no_runs}")
