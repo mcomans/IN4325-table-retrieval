@@ -88,9 +88,10 @@ def write_trec_results(rfr, x):
 
 feature_data = pd.read_csv('data/features.csv')
 
-# Group the feature data by queries in order to create a train/test split
-test = feature_data[feature_data.groupby('query_id').ngroup() > 45]
-train = feature_data[feature_data.groupby('query_id').ngroup() < 45]
+# Randomly sample queries for the test set and divide the data in training/test sets
+random_test_queries = np.random.choice(feature_data['query_id'].unique(), 20, replace=False)
+test = feature_data[feature_data['query_id'].isin(random_test_queries)]
+train = feature_data[~feature_data['query_id'].isin(random_test_queries)]
 
 # Separate the query information
 test_info = test[['query_id', 'query', 'table_id']].reset_index()
