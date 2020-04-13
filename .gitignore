@@ -6,6 +6,7 @@
 
 .venv
 .idea
+data
 
 ### macOS ###
 # General
