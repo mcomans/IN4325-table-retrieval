@@ -18,9 +18,9 @@ with open(args.rel, "r") as rel_file:
 
 
 tables = [table for table in [get_table(args.tables, rel[1]) for rel in rels] if table]
-page_titles = [table.page_title.split() for table in tables]
-section_titles = [table.second_title.split() for table in tables]
-table_captions = [table.caption.split() for table in tables]
+page_titles = [table.page_title.lower().split() for table in tables]
+section_titles = [table.second_title.lower().split() for table in tables]
+table_captions = [table.caption.lower().split() for table in tables]
 table_bodies = [table.body_tokens() for table in tables]
 table_headers = [table.header_tokens() for table in tables]
 
@@ -41,6 +41,8 @@ with open(args.output, "w") as out:
               "leftColHits,"
               "secColHits,"
               "bodyHits,"
+              "qInPgTitle,"
+              "qInTableTitle,"
               "rel\n")
 
     for rel in rels:
@@ -55,6 +57,9 @@ with open(args.output, "w") as out:
 
         table = filtered_tables[0]
         query_terms = query.split()
+
+        q_in_pg_title = sum(1 for term in query_terms if term in table.page_title.lower().split()) / len(query_terms)
+        q_in_table_title = sum(1 for term in query_terms if term in table.caption.lower().split()) / len(query_terms)
 
         out.write(f"{query_id},"
                   f"{query},"
@@ -71,4 +76,6 @@ with open(args.output, "w") as out:
                   f"{total_term_frequency(query_terms, table.column_tokens(0))},"
                   f"{total_term_frequency(query_terms, table.column_tokens(1))},"
                   f"{total_term_frequency(query_terms, table.body_tokens())},"
+                  f"{q_in_pg_title},"
+                  f"{q_in_table_title},"
                   f"{relevance}")
