@@ -1,5 +1,8 @@
 import requests
 
+
+url = "http://localhost:2222"
+confidence_score = 0.1
 cache = {}
 
 
@@ -12,9 +15,9 @@ def extract_entities(input: str) -> [str]:
 
 
 def __make_request(input: str) -> [str]:
-    response = requests.get("https://api.dbpedia-spotlight.org/en/annotate",
+    response = requests.get(f"{url}/rest/annotate",
                             headers={"accept": "application/json"},
-                            params={"text": input})
+                            params={"text": input, "confidence": confidence_score})
     response_data = response.json()
     if hasattr(response_data, "Resources"):
         result = [resource["@surfaceForm"]

@@ -42,6 +42,11 @@ It is optional to create a virtualenv with this python version as described
     ```bash
    python -m spacy download en_core_web_sm
    ```
+5. `Optional but recommended` Setup a docker image running the [spotlight api](https://github.com/dbpedia-spotlight/spotlight-docker).
+    ```bash
+    docker run -itd --restart unless-stopped -p 2222:80 dbpedia/spotlight-english spotlight.sh
+    ```
+    It is expected to run at `localhost:2222` as specified in `/methods/str/dbpedia_api.py`. If you run the image on another ip or port please adjust this in the `dbpedia_api` file.
 
 ### Running steps
 
