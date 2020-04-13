@@ -1,115 +1,82 @@
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import ndcg_score
+from sklearn.metrics import make_scorer
 import numpy as np
 import pandas as pd
+from scorers import ndcg_scorer
 
 
-def ndcg_scorer(estimator, x, y):
-    """
-    Custom scorer for NDCG.
-    :param estimator: The estimator to score.
-    :param x: The data.
-    :param y: The true labels.
-    :return: Returns the NDCG score.
-    """
-    predictions = estimator.predict(x)
+class LTR:
+    def __init__(self, features_df):
+        self.feature_data = features_df
 
-    # Join all the data back to a dataframe
-    df = pd.DataFrame({'prediction': predictions})
-    if len(y) > .5 * len(feature_data):
-        df = df.join(train_info)
-    else:
-        df = df.join(test_info)
-    df = df.join(pd.DataFrame({'rel': y}))
+        # Randomly sample queries for the test set and divide the data in training/test sets
+        random_test_queries = np.random.choice(self.feature_data['query_id'].unique(), 20, replace=False)
+        test = self.feature_data[self.feature_data['query_id'].isin(random_test_queries)]
+        train = self.feature_data[~self.feature_data['query_id'].isin(random_test_queries)]
 
-    # Group the predictions and the true labels by query
-    predictions_grouped = []
-    actual_grouped = []
+        # Separate the query information
+        self.test_info = test[['query_id', 'query', 'table_id']].reset_index()
+        self.train_info = train[['query_id', 'query', 'table_id']].reset_index()
 
-    queries = df['query'].unique()
-    queryDict = {elem: pd.DataFrame for elem in queries}
+        test_labels = np.array(test['rel'])
+        train_labels = np.array(train['rel'])
 
-    for key in queryDict.keys():
-        queryDict[key] = df[:][df['query'] == key]
-        predictions_grouped.append(np.array(queryDict[key]['prediction']))
-        actual_grouped.append(np.array(queryDict[key]['rel']))
+        # Drop all the columns that aren't features
+        test = test.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
+        train = train.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
 
-    # Fill the data grouped by query with zeros to become equal length (a rectangle 2D matrix)
-    # due to scikit-learn only accepting rectangular matrices for some reason.
-    predictions_grouped_rect = np.zeros([len(predictions_grouped), len(max(predictions_grouped, key=lambda a: len(a)))])
-    for i, j in enumerate(predictions_grouped):
-        predictions_grouped_rect[i][0:len(j)] = j
+        print(f"Training set:\n\n{train}")
+        print(f'Training labels shape: {train_labels.shape}\n')
+        print(f"Testing set:\n\n{test}")
+        print(f'Testing labels shape: {test_labels.shape}\n')
 
-    actual_grouped_rect = np.zeros([len(actual_grouped), len(max(actual_grouped, key=lambda a: len(a)))])
-    for i, j in enumerate(actual_grouped):
-        actual_grouped_rect[i][0:len(j)] = j
+        test_features = np.array(test)
+        train_features = np.array(train)
 
-    return ndcg_score(actual_grouped_rect, predictions_grouped_rect, k=20)
+        self.rfr_model(train_features, train_labels, test_features, test_labels)
 
+    def rfr_model(self, x_train, y_train, x_test, y_test):
+        """
+        Run a random forest regression model.
+        :param x_train: The training data
+        :param y_train: The training labels
+        :param x_test: The test data
+        :param y_test: The test labels
+        """
+        scorer = make_scorer(ndcg_scorer, feature_data=self.feature_data, train_info=self.train_info,
+                             test_info=self.test_info)
 
-def rfr_model(x_train, y_train, x_test, y_test):
-    """
-    Run a random forest regression model.
-    :param x_train: The training data
-    :param y_train: The training labels
-    :param x_test: The test data
-    :param y_test: The test labels
-    """
-    gsc = GridSearchCV(
-        estimator=RandomForestRegressor(),
-        param_grid={
-            'max_depth': range(2, 5),
-            'n_estimators': (10, 50, 100, 1000),
-        },
-        cv=5, scoring=ndcg_scorer, verbose=0, n_jobs=-1)
+        gsc = GridSearchCV(
+            estimator=RandomForestRegressor(),
+            param_grid={
+                'max_depth': range(2, 5),
+                'n_estimators': (10, 50, 100, 1000),
+            },
+            cv=5, scoring=scorer, verbose=0, n_jobs=-1)
 
-    grid_result = gsc.fit(x_train, y_train)
-    best_params = grid_result.best_params_
-    print(best_params)
+        grid_result = gsc.fit(x_train, y_train)
+        best_params = grid_result.best_params_
+        print(best_params)
 
-    rfr = RandomForestRegressor(max_depth=best_params['max_depth'], n_estimators=best_params['n_estimators'],
-                                random_state=0, verbose=False)
-    rfr.fit(x_train, y_train)
-    score = ndcg_scorer(rfr, x_test, y_test)
-    print(score)
+        rfr = RandomForestRegressor(max_depth=best_params['max_depth'], n_estimators=best_params['n_estimators'],
+                                    random_state=0, verbose=False)
+        rfr.fit(x_train, y_train)
+        y_pred = rfr.predict(x_test)
+        score = ndcg_scorer(y_test, y_pred, feature_data=self.feature_data, train_info=self.train_info,
+                            test_info=self.test_info)
+        print(score)
 
-    write_trec_results(rfr, x_test)
+        self.write_trec_results(rfr, x_test)
 
-
-def write_trec_results(rfr, x):
-    predictions = rfr.predict(x)
-    df = test_info.join(pd.DataFrame({'score': predictions}))
-    df = df.groupby('query_id').apply(lambda x: x.sort_values(['score'], ascending=False)).reset_index(drop=True)
-    with open('results/trec_scores_ltr_testset.txt', 'w') as file:
-        for index, row in df.iterrows():
-            file.write(f"{row['query_id']} Q0 {row['table_id']} 1 {row['score']} ltr\n")
+    def write_trec_results(self, rfr, x):
+        predictions = rfr.predict(x)
+        df = self.test_info.join(pd.DataFrame({'score': predictions}))
+        df = df.groupby('query_id').apply(lambda x: x.sort_values(['score'], ascending=False)).reset_index(drop=True)
+        with open('results/trec_scores_ltr_testset.txt', 'w') as file:
+            for index, row in df.iterrows():
+                file.write(f"{row['query_id']} Q0 {row['table_id']} 1 {row['score']} ltr\n")
 
 
-feature_data = pd.read_csv('data/features.csv')
-
-# Randomly sample queries for the test set and divide the data in training/test sets
-random_test_queries = np.random.choice(feature_data['query_id'].unique(), 20, replace=False)
-test = feature_data[feature_data['query_id'].isin(random_test_queries)]
-train = feature_data[~feature_data['query_id'].isin(random_test_queries)]
-
-# Separate the query information
-test_info = test[['query_id', 'query', 'table_id']].reset_index()
-train_info = train[['query_id', 'query', 'table_id']].reset_index()
-
-test_labels = np.array(test['rel'])
-train_labels = np.array(train['rel'])
-
-# Drop all the columns that aren't features
-test = test.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
-train = train.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
-
-print(f"Training set:\n\n{train}")
-print(f'Training labels shape: {train_labels.shape}\n')
-print(f"Testing set:\n\n{test}")
-print(f'Testing labels shape: {test_labels.shape}\n')
-
-test_features = np.array(test)
-train_features = np.array(train)
-
-rfr_model(train_features, train_labels, test_features, test_labels)
+features_df = pd.read_csv('data/features.csv')
+LTR(features_df)
