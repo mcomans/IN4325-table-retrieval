@@ -9,7 +9,7 @@ import TREC
 TEST_SET_SIZE = 20
 
 
-class LTR:
+class RFR:
     def __init__(self, features_df):
         self.feature_data = features_df
 
@@ -22,30 +22,28 @@ class LTR:
         self.test_info = test[['query_id', 'query', 'table_id']].reset_index()
         self.train_info = train[['query_id', 'query', 'table_id']].reset_index()
 
-        test_labels = np.array(test['rel'])
-        train_labels = np.array(train['rel'])
+        self.y_test = np.array(test['rel'])
+        self.y_train = np.array(train['rel'])
 
         # Drop all the columns that aren't features
         test = test.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
         train = train.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
 
         print(f"Training set:\n\n{train}")
-        print(f'Training labels shape: {train_labels.shape}\n')
+        print(f'Training labels shape: {self.y_train.shape}\n')
         print(f"Testing set:\n\n{test}")
-        print(f'Testing labels shape: {test_labels.shape}\n')
+        print(f'Testing labels shape: {self.y_test.shape}\n')
 
-        test_features = np.array(test)
-        train_features = np.array(train)
+        self.x_test = np.array(test)
+        self.x_train = np.array(train)
 
-        self.rfr_model(train_features, train_labels, test_features, test_labels)
-
-    def rfr_model(self, x_train, y_train, x_test, y_test):
+    def find_best_params(self, x_train, y_train):
         """
-        Run a random forest regression model.
-        :param x_train: The training data
-        :param y_train: The training labels
-        :param x_test: The test data
-        :param y_test: The test labels
+        Finds the best parameters for the Random Forest Regression model given the training data using a grid search
+        with 5-fold cross validation with respect to the NDCG@20 metric.
+        :param x_train: The training features.
+        :param y_train: The true training labels.
+        :return: Returns the best parameters.
         """
         scorer = make_scorer(ndcg_scorer, feature_data=self.feature_data, train_info=self.train_info,
                              test_info=self.test_info)
@@ -56,23 +54,43 @@ class LTR:
                 'max_depth': range(2, 5),
                 'n_estimators': (10, 50, 100, 1000),
             },
-            cv=5, scoring=scorer, verbose=0, n_jobs=-1)
+            cv=5, scoring=scorer, n_jobs=-1)
 
         grid_result = gsc.fit(x_train, y_train)
         best_params = grid_result.best_params_
         print(best_params)
+        return best_params
 
-        rfr = RandomForestRegressor(max_depth=best_params['max_depth'], n_estimators=best_params['n_estimators'],
-                                    random_state=0, verbose=False)
-        rfr.fit(x_train, y_train)
-        y_pred = rfr.predict(x_test)
-        score = ndcg_scorer(y_test, y_pred, feature_data=self.feature_data, train_info=self.train_info,
+    def run(self, max_depth=-1, n_estimators=-1):
+        """
+        Run a random forest regression model.
+        :param max_depth: The maximum depth of a tree in the model. Best value is estimated by default.
+        :param n_estimators: The number of trees in the forest. Best value is estimated by default.
+        :return: A dataframe of predictions and their respective query information, and the NDCG@20 score for the run.
+        """
+        if max_depth == -1 or n_estimators == -1:
+            best_params = self.find_best_params(self.x_train, self.y_train)
+            max_depth = best_params['max_depth']
+            n_estimators = best_params['n_estimators']
+
+        rfr = RandomForestRegressor(max_depth=max_depth, n_estimators=n_estimators, random_state=0)
+        rfr.fit(self.x_train, self.y_train)
+
+        y_pred = rfr.predict(self.x_test)
+        score = ndcg_scorer(self.y_test, y_pred, feature_data=self.feature_data, train_info=self.train_info,
                             test_info=self.test_info)
         print(score)
 
-        results = self.test_info.join(pd.DataFrame({'score': y_pred}))
-        TREC.write_results(results, f'LTR_{TEST_SET_SIZE}')
+        return self.test_info.join(pd.DataFrame({'score': y_pred})), score
 
 
 features_df = pd.read_csv('data/features.csv')
-LTR(features_df)
+
+total = 0
+no_runs = 10
+for i in range(no_runs):
+    rfr = RFR(features_df)
+    results, score = rfr.run()
+    total += score
+    TREC.write_results(results, f'LTR_RFR_{i}_{TEST_SET_SIZE}')
+print(f"Average NDCG@20 over {no_runs} runs: {total/no_runs}")
