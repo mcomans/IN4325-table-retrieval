@@ -4,6 +4,9 @@ from sklearn.metrics import make_scorer
 import numpy as np
 import pandas as pd
 from scorers import ndcg_scorer
+import TREC
+
+TEST_SET_SIZE = 20
 
 
 class LTR:
@@ -11,7 +14,7 @@ class LTR:
         self.feature_data = features_df
 
         # Randomly sample queries for the test set and divide the data in training/test sets
-        random_test_queries = np.random.choice(self.feature_data['query_id'].unique(), 20, replace=False)
+        random_test_queries = np.random.choice(self.feature_data['query_id'].unique(), TEST_SET_SIZE, replace=False)
         test = self.feature_data[self.feature_data['query_id'].isin(random_test_queries)]
         train = self.feature_data[~self.feature_data['query_id'].isin(random_test_queries)]
 
@@ -67,15 +70,8 @@ class LTR:
                             test_info=self.test_info)
         print(score)
 
-        self.write_trec_results(rfr, x_test)
-
-    def write_trec_results(self, rfr, x):
-        predictions = rfr.predict(x)
-        df = self.test_info.join(pd.DataFrame({'score': predictions}))
-        df = df.groupby('query_id').apply(lambda x: x.sort_values(['score'], ascending=False)).reset_index(drop=True)
-        with open('results/trec_scores_ltr_testset.txt', 'w') as file:
-            for index, row in df.iterrows():
-                file.write(f"{row['query_id']} Q0 {row['table_id']} 1 {row['score']} ltr\n")
+        results = self.test_info.join(pd.DataFrame({'score': y_pred}))
+        TREC.write_results(results, f'LTR_{TEST_SET_SIZE}')
 
 
 features_df = pd.read_csv('data/features.csv')
