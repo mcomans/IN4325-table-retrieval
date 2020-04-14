@@ -1,7 +1,6 @@
-from numpy import dot
-from numpy.linalg import norm
+from sklearn.metrics.pairwise import cosine_similarity
 
 
-def cosine_sim(a: [int], b: [int]) -> float:
+def cosine_sim(a: [float], b: [float]) -> float:
     """Calculates the cosine similarity given two vectors."""
-    return dot(a, b) / (norm(a) * norm(b))
+    return cosine_similarity([a], [b])[0][0]
