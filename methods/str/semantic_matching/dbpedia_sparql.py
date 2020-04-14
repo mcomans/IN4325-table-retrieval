@@ -1,4 +1,6 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
+from os import path
+import pickle
 
 sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 
@@ -9,7 +11,11 @@ sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 # } ORDER BY DESC(?subId) LIMIT 1
 MAX_SUBJECT_ID = 52049076
 
-cache = {}
+if path.exists("../../../data/dbpedia_sparql.cache"):
+    with open("../../../data/dbpedia_sparql.cache", "rb") as load_cache:
+        cache = pickle.load(load_cache)
+else:
+    cache = {}
 
 
 def subjects_for_entity(entity: str) -> [int]:
@@ -47,3 +53,5 @@ def __get_cached(input: str) -> [int]:
 
 def __add_to_cache(input: str, result: [int]):
     cache[input] = result
+    with open("dbpedia_sparql.cache", "wb") as write_cache:
+        pickle.dump(cache, write_cache)

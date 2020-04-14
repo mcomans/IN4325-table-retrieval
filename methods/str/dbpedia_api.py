@@ -1,17 +1,23 @@
 import requests
-
+import pickle
+from os import path
 
 url = "http://localhost:2222"
 confidence_score = 0.1
-cache = {}
+
+if path.exists("../../../data/dbpedia_api.cache"):
+    with open("../../../data/dbpedia_api.cache", "rb") as load_cache:
+        cache = pickle.load(load_cache)
+else:
+    cache = {}
 
 
 def extract_entities(input: str) -> [str]:
     cached = __get_cached(input)
-    if cached is None:
-        return __make_request(input)
-    else:
+    if cached:
         return cached
+
+    return __make_request(input)
 
 
 def __make_request(input: str) -> [str]:
@@ -34,10 +40,13 @@ def __make_request(input: str) -> [str]:
 def __get_cached(input: str) -> [str]:
     if hasattr(cache, input):
         return cache[input]
+    return None
 
 
-def __add_to_cache(input: str, result: [str]):
+def __add_to_cache(input: str, result: [int]):
     cache[input] = result
+    with open("dbpedia_sparql.cache", "wb") as write_cache:
+        pickle.dump(cache, write_cache)
 
 
 def __resource_uri_to_entity(uri: str) -> str:
