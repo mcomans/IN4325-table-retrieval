@@ -52,7 +52,7 @@ class RFR:
         Run a random forest regression model.
         :param max_depth: The maximum depth of a tree in the model. Best value is estimated by default.
         :param n_estimators: The number of trees in the forest. Best value is estimated by default.
-        :return: A dataframe of predictions and their respective query information, and the NDCG@20 score for the run.
+        :return: A dataframe of predictions and their respective query information, and the NDCG scores for the run.
         """
         if max_depth == -1 or n_estimators == -1:
             best_params = self.find_best_params()

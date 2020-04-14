@@ -1,5 +1,4 @@
 from sklearn.svm import SVR as SKSVR
-import numpy as np
 import pandas as pd
 from scorers import ndcg_scorer
 
@@ -52,7 +51,10 @@ class SVR:
     def run(self, kernel='', epsilon=-1, c=-1):
         """
         Run a Support Vector Regression model.
-        :return: A dataframe of predictions and their respective query information, and the NDCG@20 score for the run.
+        :param kernel: The kernel to be used in the model. Best value is estimated by default.
+        :param epsilon: The epsilon parameter to be used in the model. Best value is estimated by default.
+        :param c: The C regularization parameter. Best value is estimated by default.
+        :return: A dataframe of predictions and their respective query information, and the NDCG scores for the run.
         """
         if not kernel or epsilon == -1 or c == -1:
             best_params = self.find_best_params()
