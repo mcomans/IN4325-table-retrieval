@@ -15,7 +15,7 @@ else:
 
 def extract_entities(input: str) -> [str]:
     cached = __get_cached(input)
-    if cached:
+    if cached is not None:
         return cached
 
     return __make_request(input)
@@ -39,7 +39,7 @@ def __make_request(input: str) -> [str]:
 
 
 def __get_cached(input: str) -> [str]:
-    if hasattr(cache, str(input)):
+    if str(input) in cache:
         return cache[input]
     return None
 

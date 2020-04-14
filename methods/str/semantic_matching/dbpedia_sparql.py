@@ -27,7 +27,7 @@ def subjects_for_entity(entity: str) -> [int]:
     the original resource url http://dbpedia.org/resource/World_Wide_Web.
     """
     cached = __get_cached(entity)
-    if cached:
+    if cached is not None:
         return cached
 
     sparql.setQuery(f"""
@@ -47,7 +47,7 @@ def subjects_for_entity(entity: str) -> [int]:
 
 
 def __get_cached(input: str) -> [int]:
-    if hasattr(cache, str(input)):
+    if str(input) in cache:
         return cache[input]
     return None
 
