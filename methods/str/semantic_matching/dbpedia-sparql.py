@@ -9,6 +9,7 @@ sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 # } ORDER BY DESC(?subId) LIMIT 1
 MAX_SUBJECT_ID = 52049076
 
+cache = {}
 
 
 def subjects_for_entity(entity: str) -> [int]:
@@ -18,6 +19,10 @@ def subjects_for_entity(entity: str) -> [int]:
     :param entity A dbpedia entity url like World_Wide_Web. This comes from
     the original resource url http://dbpedia.org/resource/World_Wide_Web.
     """
+    cached = __get_cached(entity)
+    if cached:
+        return cached
+
     sparql.setQuery(f"""
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT ?subId ?subject WHERE {{
@@ -27,8 +32,18 @@ def subjects_for_entity(entity: str) -> [int]:
     }} LIMIT 50
     """)
     sparql.setReturnFormat(JSON)
-    result = sparql.query().convert()
-    return [int(b['subId']['value']) for b in result['results']['bindings']]
+    response = sparql.query().convert()
+    category_ids = [int(b['subId']['value'])
+                    for b in response['results']['bindings']]
+    __add_to_cache(entity, category_ids)
+    return category_ids
 
 
-print(subjects_for_entity("http://dbpedia.org/resource/World_Wide_Web"))
+def __get_cached(input: str) -> [int]:
+    if hasattr(cache, input):
+        return cache[input]
+    return None
+
+
+def __add_to_cache(input: str, result: [int]):
+    cache[input] = result
