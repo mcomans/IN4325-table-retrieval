@@ -1,7 +1,5 @@
-import spacy
 from methods.types import Table, Query
-
-nlp = spacy.load('en_core_web_sm')
+from methods.str import dbpedia_api
 
 
 def extract_entities(input) -> [str]:
@@ -16,7 +14,7 @@ def extract_entities(input) -> [str]:
     else:
         terms = [input]
     assert terms is not None
-    entities = [nlp(term).ents for term in terms]
+    entities = [dbpedia_api.extract_entities(term) for term in terms]
     return [ent for list in entities for ent in list]
 
 
