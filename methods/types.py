@@ -48,7 +48,10 @@ class Table:
         :param col: Column index
         :return: A list of tokens from values in the left-most column of the table
         """
-        return [token for row in self.data if len(row) > col for token in row[col].split()]
+        return [token.lower() for row in self.data if len(row) > col for token in row[col].split()]
+
+    def header_tokens(self) -> [str]:
+        return [token.lower() for header in self.title for token in header.split()]
 
     def body_tokens(self) -> [str]:
         """
@@ -56,7 +59,7 @@ class Table:
         :return: The complete body of the table (all cells), combined and tokenized
         """
 
-        return [token for row in self.data for cell in row for token in cell.split()]
+        return [token.lower() for row in self.data for cell in row for token in cell.split()]
 
 class Query:
     id: int
