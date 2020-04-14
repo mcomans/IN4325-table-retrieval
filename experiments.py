@@ -7,6 +7,7 @@ from methods.str.extraction import ExtractionMethod
 from methods.LTR import run_ltr
 from methods.ltr import Approach
 from methods.str.semantic_matching import SemanticSpace
+from methods.str.similarity import SimilarityMethod
 
 parser = argparse.ArgumentParser(description="Runs the various experiments")
 parser.add_argument("-l", "--ltr", action='store_true', help="Run LTR baseline experiment only")
@@ -19,4 +20,5 @@ if args.ltr or run_all:
     run_ltr(Approach.RFR)
 
 if args.str or run_all:
-    run_str(ExtractionMethod.ENTITY, SemanticSpace.BAG_OF_CATEGORIES)
+    run_str(ExtractionMethod.ENTITY, SemanticSpace.BAG_OF_CATEGORIES,
+            SimilarityMethod.LATE_FUSION)

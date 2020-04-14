@@ -11,7 +11,7 @@ class SemanticSpace(Enum):
 
 def to_semantic_space(terms: [str], target_space: SemanticSpace):
     """Move our terms (either entities or words) in to a semantic space."""
-    if target_space == SemanticSpace.BAG_OF_CATEGORIES:
+    if target_space == SemanticSpace.BAG_OF_ENTITIES:
         return bag_of_entities.semantic_map(terms)
     elif target_space == SemanticSpace.BAG_OF_CATEGORIES:
         return bag_of_categories.semantic_map(terms)
