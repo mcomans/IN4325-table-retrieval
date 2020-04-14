@@ -18,12 +18,15 @@ def __make_request(input: str) -> [str]:
     response = requests.get(f"{url}/rest/annotate",
                             headers={"accept": "application/json"},
                             params={"text": input, "confidence": confidence_score})
-    response_data = response.json()
-    if hasattr(response_data, "Resources"):
-        result = [__resource_uri_to_entity(resource["@URI"])
-                  for resource in response.json()["Resources"]]
-    else:
+    if response.status_code != 200:
         result = []
+    else:
+        response_data = response.json()
+        if "Resources" in response_data:
+            result = [__resource_uri_to_entity(resource["@URI"])
+                      for resource in response.json()["Resources"]]
+        else:
+            result = []
     __add_to_cache(input, result)
     return result
 
