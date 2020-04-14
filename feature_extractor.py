@@ -1,5 +1,5 @@
 import argparse
-from load_data import read_queries, get_table
+from load_data import read_queries, get_table, read_qrels
 from methods.feature_extractor.utils import total_term_frequency, total_idf
 
 parser = argparse.ArgumentParser(description="Extracts features from query-table combinations")
@@ -12,10 +12,7 @@ args = parser.parse_args()
 
 queries = {q.id: q.query for q in read_queries(args.queries)}
 
-with open(args.rel, "r") as rel_file:
-    split_lines = [line.split('\t') for line in rel_file]
-    rels = [(split[0], split[2], split[3]) for split in split_lines]
-
+rels = read_qrels(args.rel)
 
 tables = [table for table in [get_table(args.tables, rel[1]) for rel in rels] if table]
 page_titles = [table.page_title.lower().split() for table in tables]

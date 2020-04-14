@@ -40,3 +40,10 @@ def get_table(table_dir: str, table_id: str) -> Table or None:
 def read_features(filename='data/features.csv'):
     """Reads a features file in csv format from the data directory and builds a Pandas DataFrame from it."""
     return pd.read_csv(filename)
+
+
+def read_qrels(filename='data/qrels.txt') -> [(int, str, int)]:
+    """Reads a qrels file returning pairs of q_id table_id and rel_score"""
+    with open(filename, "r") as rel_file:
+        split_lines = [line.split('\t') for line in rel_file]
+        return [(split[0], split[2], split[3]) for split in split_lines]
