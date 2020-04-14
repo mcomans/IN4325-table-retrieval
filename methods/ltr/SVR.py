@@ -5,39 +5,23 @@ from scorers import ndcg_scorer
 
 
 class SVR:
-    def __init__(self, features_df, test_set_size):
+    def __init__(self, x_train, y_train, x_test, y_test, train_info, test_info):
         """
-        Initializes the Support Vector Regression class by preprocessing the dataset and initializing the features.
-        :param features_df: A dataframe containing the raw features and their attributes.
-        :param test_set_size: The size that the test set should be.
+        Initializes the Support Vector Regression class by initializing the data.
+        :param x_train: An array containing the training features.
+        :param y_train: An array containing the training labels.
+        :param x_test: An array containing the testing features.
+        :param y_test: An array containing the testing labels.
+        :param train_info: A DataFrame containing the query/table information for the training data.
+        :param test_info: A DataFrame containing the query/table information for the testing data.
         """
-        self.feature_data = features_df
+        self.x_train = x_train
+        self.y_train = y_train
+        self.x_test = x_test
+        self.y_test = y_test
 
-        # Randomly sample queries for the test set and divide the data in training/test sets
-        random_test_queries = np.random.choice(self.feature_data['query_id'].unique(), test_set_size, replace=False)
-        test = self.feature_data[self.feature_data['query_id'].isin(random_test_queries)]
-        train = self.feature_data[~self.feature_data['query_id'].isin(random_test_queries)]
-
-        # Separate the query and table information
-        self.test_info = test[['query_id', 'query', 'table_id']].reset_index()
-        self.train_info = train[['query_id', 'query', 'table_id']].reset_index()
-
-        # Create plain arrays for the test and train labels
-        self.y_test = np.array(test['rel'])
-        self.y_train = np.array(train['rel'])
-
-        # Drop all the columns that aren't features. This leaves a dataframe of features (and column names).
-        self.test_features = test.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
-        self.train_features = train.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
-
-        print(f"Training set:\n\n{train}")
-        print(f'Training labels shape: {self.y_train.shape}\n')
-        print(f"Testing set:\n\n{test}")
-        print(f'Testing labels shape: {self.y_test.shape}\n')
-
-        # Create plain arrays from the feature dataframes
-        self.x_test = np.array(self.test_features)
-        self.x_train = np.array(self.train_features)
+        self.train_info = train_info
+        self.test_info = test_info
 
         self.model = None
 
