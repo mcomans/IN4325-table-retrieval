@@ -20,7 +20,7 @@ def __make_request(input: str) -> [str]:
                             params={"text": input, "confidence": confidence_score})
     response_data = response.json()
     if hasattr(response_data, "Resources"):
-        result = [resource["@surfaceForm"]
+        result = [__resource_uri_to_entity(resource["@URI"])
                   for resource in response.json()["Resources"]]
     else:
         result = []
@@ -35,3 +35,10 @@ def __get_cached(input: str) -> [str]:
 
 def __add_to_cache(input: str, result: [str]):
     cache[input] = result
+
+
+def __resource_uri_to_entity(uri: str) -> str:
+    """Return the actual entity which is described in the last part of the
+    uri as for example with http://dbpedia.org/resource/World_Wide_Web"""
+    sections = uri.split("/")
+    return sections[len(sections) - 1]
