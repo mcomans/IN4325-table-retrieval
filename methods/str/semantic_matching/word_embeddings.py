@@ -1,5 +1,6 @@
 import gensim.downloader as api
 wv = api.load('word2vec-google-news-300')
+print("Loaded word2vec-google-news-300")
 
 
 def semantic_map(terms: [str]):
