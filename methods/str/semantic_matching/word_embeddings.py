@@ -3,6 +3,8 @@ wv = api.load('word2vec-google-news-300')
 
 
 def semantic_map(terms: [str]):
+    # Split entities that have a _ due to their original form from DBpedia.
+    terms = [t for term in terms for t in term.split("_")]
     return [vector for vector in [__get_vector(term) for term in terms] if vector]
 
 
