@@ -1,6 +1,7 @@
 from methods.types import Table, Query
 import json
 import re
+import pandas as pd
 
 
 def read_tables(filename="data/tables/example.json") -> [Table]:
@@ -34,3 +35,8 @@ def get_table(table_dir: str, table_id: str) -> Table or None:
         return None
 
     return tables_filtered[0]
+
+
+def read_features(filename='data/features.csv'):
+    """Reads a features file in csv format from the data directory and builds a Pandas DataFrame from it."""
+    return pd.read_csv(filename)
