@@ -16,6 +16,8 @@ def run_ltr(approach: ltr.Approach):
 
     if approach == ltr.Approach.RFR:
         run_rfr_experiment(features_df, 10)
+    if approach == ltr.Approach.SVR:
+        run_svr_experiment(features_df, 1)
 
 
 def run_rfr_experiment(features_df, runs):
@@ -55,3 +57,21 @@ def run_rfr_experiment(features_df, runs):
     plt.xticks(range(len(importances.index)), importances.index, rotation=45, ha='right')
     plt.xlim([-1, len(importances.index)])
     plt.savefig('results/avg_feature_importances.pdf')
+
+
+def run_svr_experiment(features_df, runs):
+    """
+    Runs an experiment using Support Vector Regression.
+    Prints the average NDCG values over the given amount of runs.
+    :param features_df: A dataframe of raw feature data and its attributes.
+    :param runs: The number of runs that should be executed, of which the results will be averaged.
+    """
+    results = pd.DataFrame()
+
+    for i in range(runs):
+        svr = ltr.SVR(features_df, TEST_SET_SIZE)
+        predictions, scores = svr.run()
+        results = results.append(scores, ignore_index=True)
+        TREC.write_results(predictions, f'LTR_SVR_{i}_{TEST_SET_SIZE}')
+
+    print(f"---\nAverage NDCG over {runs} runs at cutoff points:\n{results.mean(axis=0)}\n")
