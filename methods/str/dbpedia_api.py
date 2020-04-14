@@ -40,12 +40,12 @@ def __make_request(input: str) -> [str]:
 
 def __get_cached(input: str) -> [str]:
     if str(input) in cache:
-        return cache[input]
+        return cache[str(input)]
     return None
 
 
 def __add_to_cache(input: str, result: [int]):
-    cache[input] = result
+    cache[str(input)] = result
     with open("data/dbpedia_api.cache", "wb") as write_cache:
         pickle.dump(cache, write_cache)
 

@@ -48,11 +48,11 @@ def subjects_for_entity(entity: str) -> [int]:
 
 def __get_cached(input: str) -> [int]:
     if str(input) in cache:
-        return cache[input]
+        return cache[str(input)]
     return None
 
 
 def __add_to_cache(input: str, result: [int]):
-    cache[input] = result
+    cache[str(input)] = result
     with open("data/dbpedia_sparql.cache", "wb") as write_cache:
         pickle.dump(cache, write_cache)
