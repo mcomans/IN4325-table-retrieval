@@ -15,7 +15,7 @@ def run_ltr(approach: ltr.Approach):
     features_df = read_features()
 
     if approach == ltr.Approach.RFR:
-        run_rfr_experiment(features_df, 2)
+        run_rfr_experiment(features_df, 10)
 
 
 def run_rfr_experiment(features_df, runs):
