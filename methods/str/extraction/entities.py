@@ -36,7 +36,10 @@ def __find_core_column(table: Table) -> [str]:
         scores.append((col, col_data, len(extract_entities(col_data)) /
                        table.num_cols))
     sorted_scores = sorted(scores, key=lambda x: x[2], reverse=True)
-    return sorted_scores[0][1]
+    if len(sorted_scores) > 0:
+        return sorted_scores[0][1]
+    else:
+        return []
 
 
 def __take_top_k(entities: [str], k: int = 10):
