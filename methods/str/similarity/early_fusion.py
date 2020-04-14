@@ -15,13 +15,12 @@ def calculate_sim(query_vectors: [[int]],
     # according to Zhang and Bolag.
     query_centroid = __calculate_centroid(query_vectors)
     table_centroid = __calculate_centroid(table_vectors)
-    assert len(query_centroid) == len(table_centroid)
-    if len(query_centroid) == 1:
+    if isinstance(query_centroid, float):
         return abs(query_centroid - table_centroid)
     return cosine_sim(query_centroid, table_centroid)
 
 
-def __calculate_centroid(vectors: [[int]]) -> [int]:
+def __calculate_centroid(vectors: [[float]]) -> [float]:
     """Combine all vectors in to a centroid."""
     assert len(vectors) > 0
     vector_length = len(vectors[0])
