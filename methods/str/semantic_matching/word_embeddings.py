@@ -8,6 +8,6 @@ def semantic_map(terms: [str]):
 
 def __get_vector(word: str) -> [int]:
     try:
-        return wv[word].toList()
+        return wv[word].tolist()
     except KeyError:
         return None
