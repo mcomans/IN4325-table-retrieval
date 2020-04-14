@@ -39,6 +39,8 @@ class RFR:
         self.x_test = np.array(test)
         self.x_train = np.array(train)
 
+        self.model = None
+
     def find_best_params(self):
         """
         Finds the best parameters for the Random Forest Regression model given the training data using a grid search
@@ -72,9 +74,9 @@ class RFR:
             max_depth = best_params['max_depth']
             n_estimators = best_params['n_estimators']
 
-        rfr = RandomForestRegressor(max_depth=max_depth, n_estimators=n_estimators, random_state=0)
-        rfr.fit(self.x_train, self.y_train)
-        y_pred = rfr.predict(self.x_test)
+        self.model = RandomForestRegressor(max_depth=max_depth, n_estimators=n_estimators, random_state=0)
+        self.model.fit(self.x_train, self.y_train)
+        y_pred = self.model.predict(self.x_test)
 
         scores = dict.fromkeys([5, 10, 15, 20])
         scores[5] = ndcg_scorer(self.y_test, y_pred, info=self.test_info, k=5)
