@@ -20,5 +20,5 @@ if args.ltr or run_all:
     run_ltr(Approach.RFR)
 
 if args.str or run_all:
-    run_str(ExtractionMethod.ENTITY, SemanticSpace.BAG_OF_CATEGORIES,
+    run_str(ExtractionMethod.ENTITY, SemanticSpace.WORD_EMBEDDINGS,
             SimilarityMethod.LATE_FUSION)
