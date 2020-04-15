@@ -8,7 +8,8 @@ def extract_unique_words(input) -> [str]:
         terms = __extract_table_terms(input)
     elif type(input) == Query:
         terms = input.query.split(" ")
-    assert terms is not None
+    if terms is None:
+        return []
     return list(set(terms))
 
 
