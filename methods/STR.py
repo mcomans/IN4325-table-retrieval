@@ -40,6 +40,7 @@ def run_str(e_method: extraction.ExtractionMethod,
         def __use_score(r: dict, id: int):
             result = r
             result["score"] = r["score"][id]
+            return result
         results_max = [__use_score(result, 0) for result in results]
         write_results(pd.DataFrame(results_max),
                       f"STR_{e_method}_{sm_method}_{sim_method}_MAX")
