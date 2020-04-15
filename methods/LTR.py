@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from load_data import read_features
+from load_data import read_features, get_read_file
 import methods.ltr as ltr
 import TREC
 
@@ -19,6 +19,8 @@ def run_ltr(approach: ltr.Approach):
         run_rfr_experiment(features_df, 10)
     if approach == ltr.Approach.SVR:
         run_svr_experiment(features_df, 1)
+    if approach == ltr.Approach.SVM_RANK:
+        setup_svm_rank_experiment(features_df)
 
 
 def split_data(features_df):
@@ -117,3 +119,27 @@ def run_svr_experiment(features_df, runs):
         TREC.write_results(predictions, f'LTR_SVR_{i}_{TEST_SET_SIZE}')
 
     print(f"---\nAverage NDCG over {runs} runs at cutoff points:\n{results.mean(axis=0)}\n")
+
+
+def setup_svm_rank_experiment(features_df):
+    """
+    Guides through an SVMrank experiment. First, the correct input files are written.
+    Then, after the user manually configures and starts SVMrank, the results can be imported by entering the filename.
+    The predictions will then be converted to a format suitable for trec_eval.
+    :param features_df: A dataframe of raw feature data and its attributes.
+    """
+    random_test_queries = np.random.choice(features_df['query_id'].unique(), TEST_SET_SIZE, replace=False)
+    test = features_df[features_df['query_id'].isin(random_test_queries)].reset_index(drop=True)
+    train = features_df[~features_df['query_id'].isin(random_test_queries)].reset_index(drop=True)
+
+    svmr = ltr.SVMrank(train, test)
+    svmr.write_input_files()
+
+    predictions_file = input("Enter the filename of the generated predictions file in data/svm_rank: ")
+
+    file = get_read_file('data/svm_rank', predictions_file)
+    predictions = [float(x) for x in file.readlines()]
+    file.close()
+
+    test = test.join(pd.DataFrame({'score': predictions}))
+    TREC.write_results(test, f'SVM_RANK_{TEST_SET_SIZE}')
