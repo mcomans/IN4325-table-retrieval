@@ -1,6 +1,4 @@
-from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import make_scorer
 import numpy as np
 import pandas as pd
 from scorers import ndcg_scorer
@@ -20,24 +18,28 @@ class RFR:
         test = self.feature_data[self.feature_data['query_id'].isin(random_test_queries)]
         train = self.feature_data[~self.feature_data['query_id'].isin(random_test_queries)]
 
-        # Separate the query information
+        # Separate the query and table information
         self.test_info = test[['query_id', 'query', 'table_id']].reset_index()
         self.train_info = train[['query_id', 'query', 'table_id']].reset_index()
 
+        # Create plain arrays for the test and train labels
         self.y_test = np.array(test['rel'])
         self.y_train = np.array(train['rel'])
 
-        # Drop all the columns that aren't features
-        test = test.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
-        train = train.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
+        # Drop all the columns that aren't features. This leaves a dataframe of features (and column names).
+        self.test_features = test.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
+        self.train_features = train.drop(['query_id', 'query', 'table_id', 'rel'], axis=1)
 
         print(f"Training set:\n\n{train}")
         print(f'Training labels shape: {self.y_train.shape}\n')
         print(f"Testing set:\n\n{test}")
         print(f'Testing labels shape: {self.y_test.shape}\n')
 
-        self.x_test = np.array(test)
-        self.x_train = np.array(train)
+        # Create plain arrays from the feature dataframes
+        self.x_test = np.array(self.test_features)
+        self.x_train = np.array(self.train_features)
+
+        self.model = None
 
     def find_best_params(self):
         """
@@ -72,9 +74,9 @@ class RFR:
             max_depth = best_params['max_depth']
             n_estimators = best_params['n_estimators']
 
-        rfr = RandomForestRegressor(max_depth=max_depth, n_estimators=n_estimators, random_state=0)
-        rfr.fit(self.x_train, self.y_train)
-        y_pred = rfr.predict(self.x_test)
+        self.model = RandomForestRegressor(max_depth=max_depth, n_estimators=n_estimators, random_state=0)
+        self.model.fit(self.x_train, self.y_train)
+        y_pred = self.model.predict(self.x_test)
 
         scores = dict.fromkeys([5, 10, 15, 20])
         scores[5] = ndcg_scorer(self.y_test, y_pred, info=self.test_info, k=5)
@@ -83,3 +85,18 @@ class RFR:
         scores[20] = ndcg_scorer(self.y_test, y_pred, info=self.test_info, k=20)
 
         return self.test_info.join(pd.DataFrame({'score': y_pred})), scores
+
+    def feature_importance(self):
+        """
+        Returns a dataframe containing the importances of the different features in the model and their standard
+        deviations.
+        :return: Dataframe containing importance and std columns.
+        """
+        if self.model is None:
+            print("Model has not been defined yet. Skipping feature importances...")
+            return
+
+        importances = self.model.feature_importances_
+        std = np.std([tree.feature_importances_ for tree in self.model.estimators_], axis=0)
+
+        return pd.DataFrame({'importance': importances, 'std': std}, index=self.train_features.columns)
