@@ -17,6 +17,7 @@ run_all = len(vars(args)) == 0
 if args.ltr or run_all:
     run_ltr(Approach.RFR)
     run_ltr(Approach.SVR)
+    run_ltr(Approach.SVM_RANK)
 
 if args.str or run_all:
     run_str(ExtractionMethod.WORDS)

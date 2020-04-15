@@ -2,6 +2,7 @@ from methods.types import Table, Query
 import json
 import re
 import pandas as pd
+from pathlib import Path
 
 
 def read_tables(filename="data/tables/example.json") -> [Table]:
@@ -40,3 +41,15 @@ def get_table(table_dir: str, table_id: str) -> Table or None:
 def read_features(filename='data/features.csv'):
     """Reads a features file in csv format from the data directory and builds a Pandas DataFrame from it."""
     return pd.read_csv(filename)
+
+
+def get_write_file(directory, filename):
+    """Creates a file for writing from the given directory path and filename.
+    Creates any parent directories if necessary."""
+    Path(directory).mkdir(parents=True, exist_ok=True)
+    return open(f'{directory}/{filename}', 'w')
+
+
+def get_read_file(directory, filename):
+    """Creates a file for reading from the given directory and filename."""
+    return open(f'{directory}/{filename}', 'r')
