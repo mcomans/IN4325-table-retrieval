@@ -32,4 +32,9 @@ if args.str or run_all:
     print("=> Running STR (ENTITY, WORD_EMBEDDINGS, LATE_FUSION)")
     run_str(ExtractionMethod.ENTITY, SemanticSpace.WORD_EMBEDDINGS,
             SimilarityMethod.LATE_FUSION)
-
+    print("=> Running STR (ENTITY_SPACY, WORD_EMBEDDINGS, EARLY_FUSION)")
+    run_str(ExtractionMethod.ENTITY_SPACY, SemanticSpace.WORD_EMBEDDINGS,
+            SimilarityMethod.EARLY_FUSION)
+    print("=> Running STR (ENTITY_SPACY, WORD_EMBEDDINGS, LATE_FUSION)")
+    run_str(ExtractionMethod.ENTITY_SPACY, SemanticSpace.WORD_EMBEDDINGS,
+            SimilarityMethod.LATE_FUSION)
