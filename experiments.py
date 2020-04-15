@@ -20,16 +20,16 @@ if args.ltr or run_all:
     run_ltr(Approach.RFR)
 
 if args.str or run_all:
-    print("=> Running STR (WORDS, WORD_EMBEDDINGS, EARLY_FUSION")
+    print("=> Running STR (WORDS, WORD_EMBEDDINGS, EARLY_FUSION)")
     run_str(ExtractionMethod.WORDS, SemanticSpace.WORD_EMBEDDINGS,
             SimilarityMethod.EARLY_FUSION)
-    print("=> Running STR (WORDS, WORD_EMBEDDINGS, EARLY_FUSION")
+    print("=> Running STR (WORDS, WORD_EMBEDDINGS, EARLY_FUSION)")
     run_str(ExtractionMethod.WORDS, SemanticSpace.WORD_EMBEDDINGS,
             SimilarityMethod.EARLY_FUSION)
-    print("=> Running STR (ENTITY, WORD_EMBEDDINGS, EARLY_FUSION")
+    print("=> Running STR (ENTITY, WORD_EMBEDDINGS, EARLY_FUSION)")
     run_str(ExtractionMethod.ENTITY, SemanticSpace.WORD_EMBEDDINGS,
             SimilarityMethod.EARLY_FUSION)
-    print("=> Running STR (ENTITY, WORD_EMBEDDINGS, LATE_FUSION")
+    print("=> Running STR (ENTITY, WORD_EMBEDDINGS, LATE_FUSION)")
     run_str(ExtractionMethod.ENTITY, SemanticSpace.WORD_EMBEDDINGS,
             SimilarityMethod.LATE_FUSION)
 
