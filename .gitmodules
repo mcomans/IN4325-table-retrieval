@@ -1,0 +1,3 @@
+[submodule "AdaRank"]
+	path = AdaRank
+	url = git@github.com:rueycheng/AdaRank.git
