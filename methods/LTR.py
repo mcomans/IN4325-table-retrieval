@@ -19,6 +19,8 @@ def run_ltr(approach: ltr.Approach):
         run_rfr_experiment(features_df, 10)
     if approach == ltr.Approach.SVR:
         run_svr_experiment(features_df, 1)
+    if approach == ltr.Approach.AdaRank:
+        run_adarank_experiment(features_df, 20)
 
 
 def split_data(features_df):
@@ -113,6 +115,20 @@ def run_svr_experiment(features_df, runs):
         svr = ltr.SVR(x_train, y_train, x_test, y_test, train_info, test_info)
 
         predictions, scores = svr.run()
+        results = results.append(scores, ignore_index=True)
+        TREC.write_results(predictions, f'LTR_SVR_{i}_{TEST_SET_SIZE}')
+
+    print(f"---\nAverage NDCG over {runs} runs at cutoff points:\n{results.mean(axis=0)}\n")
+
+
+def run_adarank_experiment(features_df, runs):
+    results = pd.DataFrame()
+
+    for i in range(runs):
+        x_train, y_train, x_test, y_test, train_info, test_info, _ = split_data(features_df)
+        adr = ltr.AdaRank(x_train, y_train, x_test, y_test, train_info, test_info)
+
+        predictions, scores = adr.run()
         results = results.append(scores, ignore_index=True)
         TREC.write_results(predictions, f'LTR_SVR_{i}_{TEST_SET_SIZE}')
 
