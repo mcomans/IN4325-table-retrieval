@@ -11,7 +11,10 @@ def semantic_map(terms: [str]):
 
 
 def __get_vector(word: str) -> [int]:
-    try:
+    if word in wv:
         return wv[word].tolist()
-    except KeyError:
-        return None
+    if word.capitalize() in wv:
+        return wv[word.capitalize()]
+    if word.lower() in wv:
+        return wv[word.lower()]
+    return None
