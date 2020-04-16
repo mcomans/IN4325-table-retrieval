@@ -14,7 +14,7 @@ def __get_vector(word: str) -> [int]:
     if word in wv:
         return wv[word].tolist()
     if word.capitalize() in wv:
-        return wv[word.capitalize()]
+        return wv[word.capitalize()].tolist()
     if word.lower() in wv:
-        return wv[word.lower()]
+        return wv[word.lower()].tolist()
     return None
