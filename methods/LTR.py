@@ -18,7 +18,7 @@ def run_ltr(approach: ltr.Approach):
     if approach == ltr.Approach.RFR:
         run_rfr_experiment(features_df, 20)
     if approach == ltr.Approach.SVR:
-        run_svr_experiment(features_df, 10)
+        run_svr_experiment(features_df, 20)
     if approach == ltr.Approach.SVM_RANK:
         setup_svm_rank_experiment(features_df)
 
@@ -121,7 +121,7 @@ def run_svr_experiment(features_df, runs):
         x_train, y_train, x_test, y_test, train_info, test_info, _ = split_data(features_df)
         svr = ltr.SVR(x_train, y_train, x_test, y_test, train_info, test_info)
 
-        predictions, scores = svr.run()
+        predictions, scores = svr.run(kernel='rbf', epsilon=0.5, c=100)
         results = results.append(scores, ignore_index=True)
         TREC.write_results(predictions, f'LTR_SVR_{i}_{TEST_SET_SIZE}')
 
