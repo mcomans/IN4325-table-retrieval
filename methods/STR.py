@@ -50,6 +50,7 @@ def run_str(e_method: extraction.ExtractionMethod,
         results_avg = [__use_score(result, 2) for result in results]
         write_results(pd.DataFrame(results_avg),
                       f"STR_{e_method}_{sm_method}_{sim_method}_AVG")
+    return results
 
 
 def run_for_query_table_pair(query: Query, table: Table,
