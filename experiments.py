@@ -50,8 +50,9 @@ if args.str or run_all:
         file.write("query_id,table_id,str_w_w_ef,str_w_w_lf_max,"
                    "str_w_w_lf_sum,str_w_w_lf_avg,str_e_w_ef,str_e_w_lf_max,"
                    "str_e_w_lf_sum,str_e_w_lf_avg")
-        for (query_id, table_id, _), idx in enumerate(results_W_W_EF):
-            file.write(f"{query_id},{table_id},"
+        for idx, _ in enumerate(results_W_W_EF):
+            file.write(f"{results_W_W_EF[idx]['query_id']},"
+                       f"{results_W_W_EF[idx]['table_id']},"
                        f"{results_W_W_EF[idx]['score']},"
                        f"{results_W_W_LF[idx]['score'][0]},"
                        f"{results_W_W_LF[idx]['score'][1]},"
