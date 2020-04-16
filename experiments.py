@@ -49,7 +49,7 @@ if args.str or run_all:
     with open("STR_features.csv", "w") as file:
         file.write("query_id,table_id,str_w_w_ef,str_w_w_lf_max,"
                    "str_w_w_lf_sum,str_w_w_lf_avg,str_e_w_ef,str_e_w_lf_max,"
-                   "str_e_w_lf_sum,str_e_w_lf_avg")
+                   "str_e_w_lf_sum,str_e_w_lf_avg\n")
         for idx, _ in enumerate(results_W_W_EF):
             file.write(f"{results_W_W_EF[idx]['query_id']},"
                        f"{results_W_W_EF[idx]['table_id']},"
@@ -60,4 +60,4 @@ if args.str or run_all:
                        f"{results_E_W_EF[idx]['score']},"
                        f"{results_E_W_LF[idx]['score'][0]},"
                        f"{results_E_W_LF[idx]['score'][1]},"
-                       f"{results_E_W_LF[idx]['score'][2]}")
+                       f"{results_E_W_LF[idx]['score'][2]}\n")
