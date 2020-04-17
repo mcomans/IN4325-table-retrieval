@@ -8,7 +8,9 @@ This paper can be found [here](https://dl.acm.org/doi/abs/10.1145/3178876.318606
 
 ## Datasets
 
-*Nothing here yet.*
+We use similar data as in the original paper which is described [here](https://github.com/iai-group/www2018-table/). 
+For the application to run we expect the tables to be located in the the `data/tables/` folder and the queries in the `data/queries/` folder.
+The relation between the tables and queries (named `qrels` in the original repo) should be placed in the `data/` folder.
 
 ## Running Locally
 
@@ -50,4 +52,4 @@ It is optional to create a virtualenv with this python version as described
 
 ### Running steps
 
-*Nothing here yet.*
+The application can be run in a few different modes to run part or all the experiments mentioned in our paper, you can look in `experiments.py` or use the command `python experiments.py -h` to see all available modes.
