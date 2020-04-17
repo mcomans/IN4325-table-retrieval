@@ -53,3 +53,11 @@ def get_write_file(directory, filename):
 def get_read_file(directory, filename):
     """Creates a file for reading from the given directory and filename."""
     return open(f'{directory}/{filename}', 'r')
+
+
+def read_qrels(filename='data/qrels.txt') -> [(int, str, int)]:
+    """Reads a qrels file returning pairs of q_id table_id and rel_score"""
+    with open(filename, "r") as rel_file:
+        split_lines = [line.split('\t') for line in rel_file]
+        return [(split[0], split[2], split[3].split("\n")[0])
+                for split in split_lines]
