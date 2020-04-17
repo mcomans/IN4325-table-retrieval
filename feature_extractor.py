@@ -68,3 +68,55 @@ baseline_features.to_csv("data/baseline_features.csv", header=True, index=False)
 
 all_features = pd.merge(baseline_features, str_features, on=['query_id', 'table_id'])
 all_features.to_csv("data/all_features.csv", header=True, index=False)
+
+str_w_w_ef = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_ef']],
+                      on=['query_id', 'table_id'])
+str_w_w_ef.to_csv("data/str_w_w_ef.csv", header=True, index=False)
+
+str_w_w_lf_max = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_lf_max']],
+                      on=['query_id', 'table_id'])
+str_w_w_lf_max.to_csv("data/str_w_w_lf_max.csv", header=True, index=False)
+
+str_w_w_lf_sum = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_lf_sum']],
+                      on=['query_id', 'table_id'])
+str_w_w_lf_sum.to_csv("data/str_w_w_lf_sum.csv", header=True, index=False)
+
+str_w_w_lf_avg = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_lf_avg']],
+                      on=['query_id', 'table_id'])
+str_w_w_lf_avg.to_csv("data/str_w_w_lf_avg.csv", header=True, index=False)
+
+
+str_e_w_ef = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_e_w_ef']],
+                      on=['query_id', 'table_id'])
+str_e_w_ef.to_csv("data/str_e_w_ef.csv", header=True, index=False)
+
+str_e_w_lf_max = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_e_w_lf_max']],
+                      on=['query_id', 'table_id'])
+str_e_w_lf_max.to_csv("data/str_e_w_lf_max.csv", header=True, index=False)
+
+str_e_w_lf_sum = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_e_w_lf_sum']],
+                      on=['query_id', 'table_id'])
+str_e_w_lf_sum.to_csv("data/str_e_w_lf_sum.csv", header=True, index=False)
+
+str_e_w_lf_avg = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_e_w_lf_avg']],
+                      on=['query_id', 'table_id'])
+str_e_w_lf_avg.to_csv("data/str_e_w_lf_avg.csv", header=True, index=False)
+
+str_w_w_all = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_ef',
+                                                        'str_w_w_lf_max', 'str_w_w_lf_sum', 'str_w_w_lf_avg']])
+str_w_w_all.to_csv("data/str_w_w_all.csv", header=True, index=False)
+str_e_w_all = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_e_w_ef',
+                                                        'str_e_w_lf_max', 'str_e_w_lf_sum', 'str_e_w_lf_avg']])
+str_e_w_all.to_csv("data/str_e_w_all.csv", header=True, index=False)
+
+str_ef_all = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_ef', 'str_e_w_ef']])
+str_ef_all.to_csv("data/str_ef_all.csv", header=True, index=False)
+
+str_lf_max_all = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_lf_max', 'str_e_w_lf_max']])
+str_lf_max_all.to_csv("data/str_lf_max_all.csv", header=True, index=False)
+
+str_lf_sum_all = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_lf_sum', 'str_e_w_lf_sum']])
+str_lf_sum_all.to_csv("data/str_lf_sum_all.csv", header=True, index=False)
+
+str_lf_avg_all = pd.merge(baseline_features, str_features[['query_id', 'table_id', 'str_w_w_lf_avg', 'str_e_w_lf_avg']])
+str_lf_avg_all.to_csv("data/str_lf_avg_all.csv", header=True, index=False)
