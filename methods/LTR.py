@@ -16,9 +16,9 @@ def run_ltr(approach: ltr.Approach):
     features_df = read_features()
 
     if approach == ltr.Approach.RFR:
-        run_rfr_experiment(features_df, 10)
+        run_rfr_experiment(features_df, 20)
     if approach == ltr.Approach.SVR:
-        run_svr_experiment(features_df, 1)
+        run_svr_experiment(features_df, 20)
     if approach == ltr.Approach.SVM_RANK:
         setup_svm_rank_experiment(features_df)
 
@@ -76,7 +76,7 @@ def run_rfr_experiment(features_df, runs):
         x_train, y_train, x_test, y_test, train_info, test_info, train_features = split_data(features_df)
         rfr = ltr.RFR(x_train, y_train, x_test, y_test, train_info, test_info, train_features)
 
-        predictions, scores = rfr.run()
+        predictions, scores = rfr.run(max_depth=4, n_estimators=5000)
         results = results.append(scores, ignore_index=True)
         TREC.write_results(predictions, f'LTR_RFR_{i}_{TEST_SET_SIZE}')
         res_imp = rfr.feature_importance().add_suffix(f'_{i}')
@@ -88,17 +88,24 @@ def run_rfr_experiment(features_df, runs):
     importances['std_mean'] = importances.loc[:, importances.columns.str.contains('std')].mean(axis=1)
     importances = importances.sort_values('importance_mean', ascending=False)
 
+    # Add a column containing the type of feature and remove any STR prefixes from feature names
+    importances['feature_type'] = 'baseline'
+    importances['feature_type'] = importances.index.map(lambda x: 'str' if x.startswith('str_') else 'baseline')
+    importances = importances.rename(index=lambda x: x[x.startswith("str_") and len("str_"):])
+
     print("Feature importances: feature (mean, sd)")
     for index, row in importances.iterrows():
-        print(f"{index} ({row['importance_mean']}, {row['std_mean']})")
+        print(f"[{row['feature_type']}] {index} ({row['importance_mean']}, {row['std_mean']})")
 
-    plt.figure(figsize=(15, 10))
+    colors = {'str': 'r', 'baseline': 'b'}
+
+    plt.figure(figsize=(15, 7))
     plt.title(f"Average feature importances over {runs} runs")
-    plt.bar(range(len(importances.index)), importances['importance_mean'], color="b", yerr=importances['std_mean'],
-            align="center")
+    plt.bar(range(len(importances.index)), importances['importance_mean'],
+            color=[colors[t] for t in importances['feature_type']], align="center")
     plt.xticks(range(len(importances.index)), importances.index, rotation=45, ha='right')
     plt.xlim([-1, len(importances.index)])
-    plt.savefig('results/avg_feature_importances.pdf')
+    plt.savefig('results/avg_feature_importances.pdf', bbox_inches='tight')
 
 
 def run_svr_experiment(features_df, runs):
@@ -114,7 +121,7 @@ def run_svr_experiment(features_df, runs):
         x_train, y_train, x_test, y_test, train_info, test_info, _ = split_data(features_df)
         svr = ltr.SVR(x_train, y_train, x_test, y_test, train_info, test_info)
 
-        predictions, scores = svr.run()
+        predictions, scores = svr.run(kernel='rbf', epsilon=0.5, c=100)
         results = results.append(scores, ignore_index=True)
         TREC.write_results(predictions, f'LTR_SVR_{i}_{TEST_SET_SIZE}')
 

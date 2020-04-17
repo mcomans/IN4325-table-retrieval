@@ -33,8 +33,8 @@ class RFR:
         :return: Returns the best parameters.
         """
         best = {'score': 0, 'n_estimators': 0, 'max_depth': 0}
-        for max_depth in range(2, 4):
-            for n_estimators in [50, 100, 1000]:
+        for max_depth in range(2, 5):
+            for n_estimators in [50, 100, 500, 1000, 5000]:
                 rfr = RandomForestRegressor(max_depth=max_depth, n_estimators=n_estimators, random_state=0)
                 rfr.fit(self.x_train, self.y_train)
                 y_pred = rfr.predict(self.x_train)
